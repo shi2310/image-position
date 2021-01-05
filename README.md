@@ -1,5 +1,7 @@
 # image-position
 
+图片位置坐标相对标定，canvas缩放拖拽
+
 ## Project setup
 ```
 yarn install
@@ -7,7 +9,7 @@ yarn install
 
 ### Compiles and hot-reloads for development
 ```
-yarn serve
+yarn start
 ```
 
 ### Compiles and minifies for production
