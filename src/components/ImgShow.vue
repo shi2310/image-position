@@ -87,7 +87,9 @@ export default {
       canvas.onmousedown = function(event) {
         event.stopPropagation();
         event.preventDefault();
-
+        if (!_this.img) {
+          return;
+        }
         let pos = _this.windowToCanvas(event.clientX, event.clientY);
 
         if (event.button == 2) {

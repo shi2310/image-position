@@ -23,11 +23,23 @@
         </a-list>
       </div>
       <div :style="{ textAlign: 'center' }">
-        <a-button type="primary" @click="postJson">
+        <a-button
+          type="primary"
+          @click="
+            () => {
+              this.visible = true;
+            }
+          "
+        >
           提交
         </a-button>
       </div>
     </div>
+    <a-modal v-model="visible" title="对标数据">
+      <pre :style="{ maxHeight: '500px' }">{{
+        JSON.stringify(newData, null, 3)
+      }}</pre>
+    </a-modal>
   </div>
 </template>
 
@@ -56,6 +68,7 @@ export default {
       index: 0,
       data: [],
       newData: [],
+      visible: false,
     };
   },
   watch: {
@@ -90,9 +103,6 @@ export default {
           this.newData.splice(i, 1);
         }
       });
-    },
-    postJson() {
-      console.log(JSON.stringify(this.newData));
     },
   },
 };
