@@ -8,12 +8,15 @@
       :before-upload="beforeUpload"
     >
       <a-icon :type="loading ? 'loading' : 'plus'" />
-      <div class="ant-upload-text">
-        上传图片...
-      </div>
+      <div class="ant-upload-text">上传图片...</div>
     </a-upload>
     <div class="img">
-      <ImgShow :imageURL="imageUrl" :imageName="imageName" />
+      <ImgShow
+        :imageURL="imageUrl"
+        :imageName="imageName"
+        :dots="dots"
+        :box="box"
+      />
     </div>
   </div>
 </template>
@@ -35,6 +38,7 @@ export default {
       imageUrl: "",
     };
   },
+  props: ["box", "dots"],
   components: {
     ImgShow,
   },

@@ -2,11 +2,15 @@
   <div class="canvas_box">
     <span>{{ imageName }}</span>
     <a
+      v-for="(xy, index) in dots"
+      :key="index"
       :style="{
-        left: `${dotX * imgScale + imgX}px`,
-        top: `${dotY * imgScale + imgY}px`,
+        left: `${xy.x * imgScale + imgX}px`,
+        top: `${xy.y * imgScale + imgY}px`,
       }"
-      >{{ `x:${dotX},y:${dotY}` }}</a
+      :class="[index === currentDotIndex ? 'on' : null]"
+      @click="setDotIndex(index)"
+      >{{ `${index}[x:${xy.x},y:${xy.y}]` }}</a
     >
     <canvas ref="myCanvas" width="808" height="883"> </canvas>
   </div>
@@ -21,33 +25,22 @@ export default {
       canvas: null,
       ctx: null,
       img: null,
-      dotX: 0,
-      dotY: 0,
+      currentDotIndex: 0,
     };
   },
-  props: ["imageURL", "imageName"],
+  props: ["imageURL", "imageName", "dots", "box"],
   watch: {
     imageURL(val) {
       this.loadImg(val);
+    },
+    dots(val) {
+      this.currentDotIndex = val.length - 1;
     },
   },
   mounted() {
     this.canvas = this.$refs.myCanvas;
     this.ctx = this.canvas.getContext("2d");
     this.canvasEventsInit();
-
-    // 监听父组件的统一命令
-    this.$EventBus.$on("childPushDot", (index) => {
-      this.$EventBus.$emit("parentPullDot", {
-        index, // 索引
-        imageName: this.imageName,
-        x: this.dotX,
-        y: this.dotY,
-      });
-    });
-  },
-  beforeDestroy() {
-    this.$EventBus.$off("childPushDot");
   },
   methods: {
     loadImg(imgUrl) {
@@ -88,6 +81,7 @@ export default {
         event.stopPropagation();
         event.preventDefault();
         if (!_this.img) {
+          _this.$message.error("请上传图片");
           return;
         }
         let pos = _this.windowToCanvas(event.clientX, event.clientY);
@@ -150,8 +144,12 @@ export default {
             _this.$message.error("超出图片尺度");
             return false;
           }
-          _this.dotX = isX;
-          _this.dotY = isY;
+          // 分发事件给主组件
+          _this.$EventBus.$emit("dotChange", _this.currentDotIndex, _this.box, {
+            x: isX,
+            y: isY,
+          });
+
           console.log("点击相对于图片的坐标点: x=" + isX + " & y=" + isY);
           console.log(
             "图片完整的宽度=" + image_width + "&高度=" + image_height
@@ -182,6 +180,9 @@ export default {
         y: y - box.top - (box.height - this.canvas.height) / 2,
       };
     },
+    setDotIndex(index) {
+      this.currentDotIndex = index;
+    },
   },
 };
 </script>
@@ -198,13 +199,17 @@ export default {
 
   a {
     position: absolute;
-    width: 4px;
-    height: 4px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background-color: red;
     z-index: 999;
     color: yellow;
-    font-size: 12px;
+    font-size: 16px;
+  }
+
+  .on {
+    border: 2px dotted blue;
   }
 
   span {
