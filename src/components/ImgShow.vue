@@ -33,8 +33,10 @@ export default {
     imageURL(val) {
       this.loadImg(val);
     },
-    dots(val) {
-      this.currentDotIndex = val.length - 1;
+    dots(newValue, oldValue) {
+      if (newValue.length !== oldValue.length) {
+        this.currentDotIndex = newValue.length - 1;
+      }
     },
   },
   mounted() {
